@@ -1,0 +1,88 @@
+# # Disable user-scheduler when using non-local storage
+# # provisioners.
+# # The user-scheduler provided by the deployment tries to
+# # match the pod first on volumes that need to be mounted.
+# # When using local storage this makes perfect sense. If a
+# # new volume is needed, then it's allocated round-robin
+# # more-or-less and the pod also stay more-or-less
+# # distributed. However, since the user's volume is
+# # now mountable on all nodes, they are tested in order
+# # and the last agreeable node is selected. Hence, all pods
+# # were being allocated to the same node: not good.
+# # Disabling the userScheduler lets the default scheduler
+# # for the cluster decide, which spreads them out amongst
+# # all of the other pods on the cluster. Not perfectly
+# # balanced but better than all on one.
+scheduling:
+  userScheduler:
+    enabled: false
+hub:
+  baseUrl: "/azuread/"
+  # # Basic template for a service
+  # services:
+  #   my-service:
+  #     apiToken: "XXX"
+  #     url: http://etc
+  config:
+    Authenticator:
+      admin_users:
+        - 'joshua l. phillips'
+      enable_auth_state: True
+    CryptKeeper:
+      keys:
+      - XXXXXXXXXX
+    AzureAdOAuthenticator:
+      client_id: 'XXXXXXXXX'
+      client_secret: 'XXXXXXXXXX'
+      oauth_callback_url: 'https://jupyterhub.cs.mtsu.edu/azuread/hub/oauth_callback'
+      tenant_id: 'XXXXXXXXXX'
+    JupyterHub:
+      authenticator_class: azuread
+singleuser:
+  image:
+    name: jlphillips/csci4850
+    tag: 2022-05-01-k8s
+    # name: jupyter/minimal-notebook
+    # tag: latest
+    # # Can help with debugging...
+    # pullPolicy: Always
+  uid: 0
+  cmd: start-notebook.sh
+  defaultUrl: "/lab"
+  extraEnv:
+    GRANT_SUDO: "yes"
+  memory:
+    limit: 32G
+  storage:
+    dynamic:
+      storageClass: longhorn
+    # # Only use this if setting NB_USER above...
+    # homeMountPath: /home/{username}
+    capacity: 5Gi
+  networkPolicy:
+    enabled: true
+cull:
+  timeout: 604800
+proxy:
+  secretToken: "XXXXXXXXXX"
+  # # Only need to use ClusterIP if you want to allow interal
+  # # cluster access only - the default (empty) values opens a
+  # # NodePort on the LoadBalancer, but still needs an ingress
+  # # route if you also want a reverse proxy (most-likely
+  # # by using traefik, but can be configured here too).
+  # service:
+  #   type: ClusterIP
+  # # Alternatively, only a NodePort...
+  #   type: NodePort
+  # # Finally, you can request NP or LB to assign
+  # # specific ports (I think)
+  #   nodePorts:
+  #     http: 30480
+  #     https: 30455 
+  https:
+    enabled: true
+    hosts:
+      - jupyterhub.cs.mtsu.edu
+    type: secret
+    secret:
+      name: jupyterhub-tls
