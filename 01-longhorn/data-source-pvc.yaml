@@ -1,0 +1,44 @@
+---           
+apiVersion: v1             
+kind: PersistentVolume
+metadata:              
+  name: data-source-pv
+  labels:                
+    volume-type: data-source-pv
+spec:      
+  storageClassName: manual
+  capacity:                       
+    storage: 100Gi       
+  accessModes:
+    - ReadWriteOnce
+  hostPath: 
+    # Configure to the path where the source
+    # data resides (if you already have a
+    # PV/PVC create, you don't need it).
+    path: "/home/jphillips@cs.mtsu.edu/data"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - jupyterhub-00.cs.mtsu.edu
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-source-pvc
+  labels:
+    name: data-source-pvc
+spec:
+  selector:
+    matchLabels:
+      volume-type: data-source-pv
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Gi
+
