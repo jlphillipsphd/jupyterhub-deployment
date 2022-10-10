@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: https-service-jupyterhub
+spec:
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: https-service-biosim
+spec:
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: https-service-raziel
+spec:
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: https-service-sainju
+spec:
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: https-service-jupyterhub
+subsets:
+  - addresses:
+      - ip: 161.45.160.30
+      - ip: 161.45.160.31
+      - ip: 161.45.160.32
+    ports:
+      - port: 443
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: https-service-biosim
+subsets:
+  - addresses:
+      - ip: 161.45.156.101
+      - ip: 161.45.156.102
+      - ip: 161.45.156.103
+      - ip: 161.45.156.104        
+    ports:
+      - port: 443
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: https-service-raziel
+subsets:
+  - addresses:
+      - ip: 161.45.164.103
+    ports:
+      - port: 443
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: https-service-sainju
+subsets:
+  - addresses:
+      - ip: 161.45.164.89
+    ports:
+      - port: 443
