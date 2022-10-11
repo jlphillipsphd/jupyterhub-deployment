@@ -192,9 +192,10 @@ proxy:
   # # cluster access only - the default (empty) values opens a
   # # NodePort on the LoadBalancer, but still needs an ingress
   # # route if you also want a reverse proxy (most-likely
-  # # by using traefik, but can be configured here too).
-  # service:
-  #   type: ClusterIP
+  # # by using traefik), and this this would best be served
+  # # via ClusterIP for security purposes.
+  service:
+    type: ClusterIP
   # # Alternatively, only a NodePort...
   #   type: NodePort
   # # Finally, you can request NP or LB to assign
@@ -203,9 +204,11 @@ proxy:
   #     http: 30480
   #     https: 30455 
   https:
-    enabled: true
-    hosts:
-      - jupyterhub.cs.mtsu.edu
-    type: secret
-    secret:
-      name: jupyterhub-tls
+    enabled: false
+    # # Only kept for memory - should deploy TLS termination
+    # # in the traefik IngressRoute instead...
+    # hosts:
+    #   - jupyterhub.cs.mtsu.edu
+    # type: secret
+    # secret:
+    #   name: jupyterhub-tls
