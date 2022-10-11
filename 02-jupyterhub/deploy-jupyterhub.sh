@@ -13,7 +13,7 @@
 # helm upgrade --install jupyter jupyterhub/jupyterhub \
 helm upgrade --install jupyterhub jupyterhub/jupyterhub \
 	--namespace jupyterhub \
-	--version=1.2.0 \
+	--version=2.0.0 \
 	--timeout=60m \
 	--values values-jupyterhub.yaml
 
