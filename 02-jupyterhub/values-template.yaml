@@ -169,12 +169,16 @@ singleuser:
     # tag: latest
     # # Can help with debugging...
     # pullPolicy: Always
+  allowPrivilegeEscalation: true
   uid: 0
   cmd: start-notebook.sh
   defaultUrl: "/lab"
   extraEnv:
     GRANT_SUDO: "yes"
+    CHOWN_HOME: "yes"
+    NOTEBOOK_ARGS: "--allow-root"   
   memory:
+    guarantee: 512M
     limit: 32G
   storage:
     dynamic:
