@@ -17,8 +17,7 @@ spec:
   ports:
     - protocol: TCP
       port: 443
-      # targetPort: 443
-      name: https
+      targetPort: 443
 ---
 apiVersion: v1
 kind: Service
@@ -58,21 +57,12 @@ metadata:
   name: https-service-biosim
 subsets:
   - addresses:
-      - ip: 161.45.162.87
-      # - ip: 161.45.156.101
-      # - ip: 161.45.156.102
-      # - ip: 161.45.156.103
-      # - ip: 161.45.156.104
+      - ip: 161.45.156.101
+      - ip: 161.45.156.102
+      - ip: 161.45.156.103
+      - ip: 161.45.156.104
     ports:
-      - port: 81
-        name: https
-      - port: 82
-        name: https
-      - port: 83
-        name: https
-      - port: 84
-        name: https
-      # - port: 443
+      - port: 443
 ---
 apiVersion: v1
 kind: Endpoints
