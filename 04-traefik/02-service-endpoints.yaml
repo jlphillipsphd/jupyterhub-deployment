@@ -57,12 +57,17 @@ metadata:
   name: https-service-biosim
 subsets:
   - addresses:
-      - ip: 161.45.156.101
-      - ip: 161.45.156.102
-      - ip: 161.45.156.103
-      - ip: 161.45.156.104        
+      # - ip: 161.45.156.101
+      # - ip: 161.45.156.102
+      # - ip: 161.45.156.103
+      # - ip: 161.45.156.104
+      - ip: 161.45.162.87
     ports:
-      - port: 443
+      # - port: 443
+      - port: 81
+      - port: 82
+      - port: 83
+      - port: 84
 ---
 apiVersion: v1
 kind: Endpoints
