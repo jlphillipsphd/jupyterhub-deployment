@@ -1,0 +1,80 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-redirect-jupyterhub
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - web
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && (PathPrefix(`/azuread`) || PathPrefix(`/codeserver`)))
+      kind: Rule
+      services:
+        - name: https-service-jupyterhub # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: https-redirect
+        - name: production-rate-limit
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-redirect-biosim
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - web
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && (PathPrefix(`/biosim`) || PathPrefix(`/phillips-lab`)))
+      kind: Rule
+      services:
+        - name: https-service-biosim # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: https-redirect
+        - name: production-rate-limit
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-redirect-raziel
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - web
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && (PathPrefix(`/raziel`) || PathPrefix(`/prism-rol`)))
+      kind: Rule
+      services:
+        - name: https-service-raziel # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: https-redirect
+        - name: production-rate-limit
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-redirect-sainju
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - web
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/sainju`))
+      kind: Rule
+      services:
+        - name: https-service-sainju # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: https-redirect
+        - name: production-rate-limit

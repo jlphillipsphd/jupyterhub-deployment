@@ -11,3 +11,6 @@ Setup of servers for JupyterHub hosting
 3. Setup glusterfs provisioner
 4. Setup jupyterhub deployment
 
+## Production Longhorn
+
+Needed to fix an issue with multipath which was causing PVCs to become unavailable: [fix here](https://longhorn.io/kb/troubleshooting-volume-with-multipath/).
