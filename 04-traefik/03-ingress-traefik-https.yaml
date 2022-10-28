@@ -1,57 +1,37 @@
 ---
 apiVersion: traefik.containo.us/v1alpha1
-kind: ServersTransport
-metadata:
-  name: jupyterhub-proxy-transport
-spec:
-  insecureSkipVerify: true
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: TLSOption
-metadata:
-  name: jupyterhub-proxy-tlsoptions
-spec:
-  minVersion: VersionTLS12
-  cipherSuites:
-    - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
-    - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-    - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-    - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
-    - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-    - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
-    - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-    - TLS_AES_256_GCM_SHA384
-    - TLS_AES_128_GCM_SHA256
-    - TLS_CHACHA20_POLY1305_SHA256
-    - TLS_FALLBACK_SCSV
-  curvePreferences:
-    - CurveP521
-    - CurveP384
-  sniStrict: false
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: production-security
-spec:
-  headers:
-    frameDeny: true
-    sslRedirect: true
-    browserXssFilter: true
-    contentTypeNosniff: true
-    stsIncludeSubdomains: true
-    stsPreload: true
-    stsSeconds: 31536000
----
-apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: proxy-jupyterhub
+  name: proxy-azuread
 spec:
   entryPoints: # We listen to requests coming from ports 80 and 443
     - websecure
   routes:
-    - match: (Host(`jupyterhub.cs.mtsu.edu`) && (PathPrefix(`/azuread`) || PathPrefix(`/codeserver`)))
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/azuread`))
+      kind: Rule
+      services:
+        - name: https-service-jupyterhub # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: production-rate-limit
+        - name: production-security
+  tls:
+    secretName: jupyterhub-tls
+    options:
+      name: jupyterhub-proxy-tlsoptions
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-codeserver
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - websecure
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/codeserver`))
       kind: Rule
       services:
         - name: https-service-jupyterhub # Requests will be forwarded to this service
@@ -75,7 +55,31 @@ spec:
   entryPoints: # We listen to requests coming from ports 80 and 443
     - websecure
   routes:
-    - match: (Host(`jupyterhub.cs.mtsu.edu`) && (PathPrefix(`/biosim`) || PathPrefix(`/phillips-lab`)))
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/biosim`))
+      kind: Rule
+      services:
+        - name: https-service-biosim # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: production-rate-limit
+        - name: production-security
+  tls:
+    secretName: jupyterhub-tls
+    options:
+      name: jupyterhub-proxy-tlsoptions
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-phillips-lab
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - websecure
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/phillips-lab`))
       kind: Rule
       services:
         - name: https-service-biosim # Requests will be forwarded to this service
@@ -99,7 +103,31 @@ spec:
   entryPoints: # We listen to requests coming from ports 80 and 443
     - websecure
   routes:
-    - match: (Host(`jupyterhub.cs.mtsu.edu`) && (PathPrefix(`/raziel`) || PathPrefix(`/prism-rol`)))
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/raziel`))
+      kind: Rule
+      services:
+        - name: https-service-raziel # Requests will be forwarded to this service
+          port: 443
+          scheme: https
+          passHostHeader: true
+          serversTransport: jupyterhub-proxy-transport
+      middlewares:
+        - name: production-rate-limit
+        - name: production-security
+  tls:
+    secretName: jupyterhub-tls
+    options:
+      name: jupyterhub-proxy-tlsoptions
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxy-prism-rol
+spec:
+  entryPoints: # We listen to requests coming from ports 80 and 443
+    - websecure
+  routes:
+    - match: (Host(`jupyterhub.cs.mtsu.edu`) && PathPrefix(`/prism-rol`))
       kind: Rule
       services:
         - name: https-service-raziel # Requests will be forwarded to this service
