@@ -125,10 +125,10 @@ hub:
               access_token = resp_json['access_token']
 
               id_token = resp_json['id_token']
-              decoded = jwt.decode(id_token, verify=False)
+              decoded = jwt.decode(id_token, options={"verify_signature": False})
 
               # userdict = {"name": decoded[self.username_claim]}
-              user_unique_id = jwt.decode(resp_json['access_token'], verify=False)['unique_name'].split('@')[0]
+              user_unique_id = jwt.decode(resp_json['access_token'], options={"verify_signature": False})['unique_name'].split('@')[0]
               userdict = {"name": user_unique_id}
               userdict["auth_state"] = auth_state = {}
               auth_state['access_token'] = access_token
@@ -171,12 +171,17 @@ singleuser:
     # pullPolicy: Always
   allowPrivilegeEscalation: true
   uid: 0
+  extraPodConfig:
+    securityContext:
+      fsGroup: 100
+      fsGroupChangePolicy: "OnRootMismatch"
   cmd: start-notebook.sh
   defaultUrl: "/lab"
   extraEnv:
     GRANT_SUDO: "yes"
     CHOWN_HOME: "yes"
-    NOTEBOOK_ARGS: "--allow-root"   
+    NOTEBOOK_ARGS: "--allow-root"
+    TZ: "America/Chicago"
   memory:
     guarantee: 512M
     limit: 32G
